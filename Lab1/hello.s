@@ -14,12 +14,13 @@
 .global _start
 _start:
 
+    # wywołanie systemowego zapisu do STDOUT (konsoli)
     mov $SYSWRITE, %eax
     mov $STDOUT, %ebx
     mov $msg, %ecx
     mov $msg_len, %edx
     int $0x80
 
-    mov $SYSEXIT, %eax
-    mov $EXIT_SUCCESS, %ebx
-    int $0x80
+    mov $SYSEXIT, %eax          # wywołanie systemowego wyjścia
+    mov $EXIT_SUCCESS, %ebx     # kod powrotu
+    int $0x80                   # przerwanie systemowe

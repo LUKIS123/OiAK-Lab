@@ -13,7 +13,7 @@
     buf_len = . - buf
 
 .text
-    msg: .ascii "Write text(5): \n"
+    msg: .ascii "Write text (5): \n"
     msg_len = . - msg
 
     msg2: .ascii "Written text: "
