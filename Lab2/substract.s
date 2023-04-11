@@ -2,65 +2,63 @@
 .text
 .global _start
 _start:
-    # czyszczenie flag
     clc
     pushf
-    # wpisanie dlugosci danych do rejestrow
     movl $liczba1_len, %esi
     movl $liczba2_len, %edi
 
-dodawanie:
+odejmowanie:
     subl $4, %esi
     subl $4, %edi
 
     popf
 
     movl liczba1(, %esi, 1), %eax
-    adcl liczba2(, %edi, 1), %eax
-
+    subl liczba2(, %edi, 1), %eax
+    
     movl %eax, wynik(, %esi, 1)     # zapisywanie wyniku dodawania do naszej tablicy wynikow
     pushl %eax                      # zapisywanie wyniku dodawania na stosie
 
     pushf
 
     cmp $0, %esi
-    jz koniec_dodawania
+    jz koniec_odejmowania
 
     cmp $0, %edi
     jz uzupelnienie_esi
 
-    jmp dodawanie
+    jmp odejmowanie
 
 uzupelnienie_esi:                   # jesli pierwsza liczba jest dluzsza
     cmp $0, %esi
-    jz koniec_dodawania
+    jz koniec_odejmowania
 
     subl $4, %esi
 
     popf
 
     movl liczba1(, %esi, 1), %eax
-    adcl $0, %eax
+    subl $0, %eax
 
     movl %eax, wynik(, %esi, 1)
     pushl %eax 
 
     pushf
 
-    jmp uzupelnienie_esi  
+    jmp uzupelnienie_esi
 
-koniec_dodawania:
+koniec_odejmowania:
     popf
     jnc koniec_programu
 
-    movl $1, %eax
+    movl $0xffffffff, %eax
     movl %eax, przeniesienie
     pushl %eax
 
 koniec_programu:
-    mov $SYSEXIT, %eax          # wywołanie systemowego wyjścia
-    mov $EXIT_SUCCESS, %ebx     # kod powrotu
-    int $0x80                   # przerwanie systemowe
+    mov $SYSEXIT, %eax
+    mov $EXIT_SUCCESS, %ebx
+    int $0x80
 
 # zmienne
 .data
