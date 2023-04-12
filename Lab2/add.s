@@ -47,9 +47,30 @@ uzupelnienie_esi:                   # jesli pierwsza liczba jest dluzsza
 
     pushf
 
-    jmp uzupelnienie_esi  
+    jmp uzupelnienie_esi
+
+uzupelnienie_edi:                   # powrot, jesli druga liczba jest dluzsza
+    cmp $0, %edi
+    jz koniec_dodawania
+
+    subl $4, %edi
+
+    popf
+
+    movl liczba2(, %edi, 1), %eax
+    adcl $0, %eax
+
+    movl %eax, wynik(, %esi, 1)
+    pushl %eax 
+
+    pushf
+
+    jmp uzupelnienie_edi
 
 koniec_dodawania:
+    cmp $0, %edi                    # sprawdz czy druga liczba jest dluzsza
+    jnz uzupelnienie_edi            # jesli tak, kontynuuj dodawanie    
+    
     popf
     jnc koniec_programu
 
@@ -68,10 +89,10 @@ koniec_programu:
     EXIT_SUCCESS = 0
 
 liczba1:
-    	.long 0x11000011, 0x10000022, 0x22002211, 0x11002211
+    	.long 0x11000011, 0x10000022, 0x22002211 # .long 0x11000011, 0x10000022, 0x22002211, 0x11002211
         liczba1_len = . - liczba1
 liczba2:
-    	.long 0xff000000, 0xff001100, 0x22001111, 0x22111100
+    	.long 0xff000000, 0xff001100, 0x22001111, 0x22111100 # .long 0xff000000, 0xff001100, 0x22001111, 0x22111100
         liczba2_len = . - liczba2
 
 .bss

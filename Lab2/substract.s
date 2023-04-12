@@ -12,10 +12,14 @@ odejmowanie:
     subl $4, %edi
 
     popf
-
     movl liczba1(, %esi, 1), %eax
+
+    jnc dalej_odejmowanie
+    subl $1, %eax
+
+dalej_odejmowanie:
     subl liczba2(, %edi, 1), %eax
-    
+
     movl %eax, wynik(, %esi, 1)     # zapisywanie wyniku dodawania do naszej tablicy wynikow
     pushl %eax                      # zapisywanie wyniku dodawania na stosie
 
@@ -36,10 +40,12 @@ uzupelnienie_esi:                   # jesli pierwsza liczba jest dluzsza
     subl $4, %esi
 
     popf
-
     movl liczba1(, %esi, 1), %eax
-    subl $0, %eax
+    
+    jnc dalej_uzupelnienie_esi
+    subl $1, %eax
 
+dalej_uzupelnienie_esi:
     movl %eax, wynik(, %esi, 1)
     pushl %eax 
 
@@ -47,7 +53,31 @@ uzupelnienie_esi:                   # jesli pierwsza liczba jest dluzsza
 
     jmp uzupelnienie_esi
 
+uzupelnienie_edi:
+    cmp $0, %edi
+    jz koniec_odejmowania
+
+    subl $4, %edi
+
+    popf
+    movl liczba2(, %edi, 1), %eax
+
+    jnc dalej_uzupelnienie_edi
+    adcl $1, %eax
+dalej_uzupelnienie_edi:
+    negl %eax
+    movl %eax, wynik(, %esi, 1)
+    pushl %eax
+
+    pushf
+
+    jmp uzupelnienie_edi
+
+
 koniec_odejmowania:
+    cmp $0, %edi
+    jnz uzupelnienie_edi
+
     popf
     jnc koniec_programu
 
@@ -66,10 +96,10 @@ koniec_programu:
     EXIT_SUCCESS = 0
 
 liczba1:
-    	.long 0x11000011, 0x10000022, 0x22002211, 0x11002211
+    	.long 0x11000011, 0x10000022, 0x22002211, 0x11002211 # 0x11000011, 0x10000022, 0x22002211, 0x11002211
         liczba1_len = . - liczba1
 liczba2:
-    	.long 0xff000000, 0xff001100, 0x22001111, 0x22111100
+    	.long 0xff000000, 0xff001100, 0x22001111, 0x22111100 #.long 0xff000000, 0xff001100, 0x22001111, 0x22111100
         liczba2_len = . - liczba2
 
 .bss
