@@ -1,17 +1,17 @@
 .text
 .global _start
 _start:
-    # assembler automatcznie startuje w podwojnjej precyzji double, ponizej ustawianie na single - float
+    # assembler automatcznie startuje w precyzji extended 80 bit, ponizej ustawianie na single - float
     # wiecej na stronie: http://www.ray.masmcode.com/tutorial/fpuchap1.htm
     # bits 9 and 8 determines to what precision the FPU rounds results
 
     fstcw control
     movw control, %ax
 
-prec:
+prec1:
     #andw  $0b1111110011111111, %ax      # set precision to single
     #orw    $0b0000110000000000, %ax     # truncate, czyli round towards zero
-    
+
     #andw    $0b1111000011111111, %ax
     #orw     $0b0000010000000000, %ax   # round down
 
@@ -20,34 +20,67 @@ prec:
 
     movw %ax, control
 
-cl:
+setup:
     fldcw control       # zaladowanie slowa sterjacego do rejestru sterujacego
+    call stload
 
-cs
-    fstcw control       # odczytane do bufora w pamieci rozkazem fstcw zeby sprawdzic control word
+addnum:     # zwykle dodawanie
+    faddp %st, %st(1)           # dodaje i wrzuca wynik na stos st (0)
 
-stload:
+    call stload
 
-    flds liczba1
-    flds liczba2
+subnum:     # generuje +0
+    fsubrp %st(0), %st(1)       # liczba1 - liczba2
 
-calc:
+    flds liczba5
+    flds liczba4
+
+mulnum:    # generuje -0
     # fmul %st(1), %st(0)
+    fmulp %st, %st(1)           # wariant czysci st(1), wynik na st(0)
 
-    # fmulp %st, %st(1)           # wariant czysci st(1), wynik na st(0)
+    flds liczba5
+    flds liczba3
 
+
+# set precision to double
+prec2:
+    fstcw control
+    movw control, %ax
+    orw $0b0000111000000000, %ax     # prescision to double + round towards zero
+    movw %ax, control
+    fldcw control
+
+
+divnum1:    # generuje +INF
     fdivp %st, %st(1)           # dzieli liczba2/liczba1 i wrzuca wynik na stos st (0)
 
-    # faddp %st, %st(1)           # dodaje i wrzuca wynik na stos st (0)
+    flds liczba5
+    flds liczba4
 
-    # fsubrp %st(0), %st(1)       # liczba1 - liczba2
+divnum2:    # generuje -INF
+    fdivp %st, %st(1)
 
-    # fsqrt                       # sqrt z liczba2 do wygenerowania NaN
+    flds liczba4
+
+sqrtnum:    # generuje NaN
+    fsqrt                       # sqrt z liczba2 (-1) do wygenerowania NaN
+
+    flds liczba3
+    flds liczba6
+
+divnum3:    # liczba zdenormalizowana
+    fdivp %st, %st(1)
 
 koniec:
     mov $SYSEXIT, %eax
     mov $EXIT_SUCCESS, %ebx
     int $0x80
+
+stload:
+    flds liczba1
+    flds liczba2
+    ret    
 
 .data
     SYSEXIT = 1
@@ -57,9 +90,16 @@ control:
     .word 0
 
 liczba1:
-    .float 1.0
-    
+    .float 1.2
 liczba2:
+    .float 1.2
+liczba3:
+    .float 1.0
+liczba4:
+    .float -1.0
+liczba5:
+    .float 0.0        
+liczba6:
     .float 0.00000000000000000000000000000000000001 
 
 # komendy:
