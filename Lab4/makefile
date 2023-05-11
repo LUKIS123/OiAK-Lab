@@ -1,8 +1,7 @@
-all: simd_test2 lab4
+all: simd
 
-simd: simd_test2.cpp lab4.cpp
-	gcc -ggdb -gstabs -Wall -msse -lstdc++ simd_test2.cpp -o simd
-	gcc -ggdb -gstabs -Wall -msse -lstdc++ lab4.cpp -o lab4
+simd: simd.cpp
+	g++ -g -msse -Wl,-V simd.cpp -o simd
 
 clean:
-	rm simd lab4
+	rm simd
