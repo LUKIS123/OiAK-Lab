@@ -1,0 +1,24 @@
+Typ obliczen: SISD
+Liczba liczb: 8192
+Sredni czas [us]:
++ : 179.34
+- : 165.332
+* : 155.197
+/ : 193.371
+
+Typ obliczen: SISD
+Liczba liczb: 4096
+Sredni czas [us]:
++ : 82.7772
+- : 81.1256
+* : 75.0758
+/ : 100.309
+
+Typ obliczen: SISD
+Liczba liczb: 2048
+Sredni czas [us]:
++ : 39.6631
+- : 39.9201
+* : 39.0401
+/ : 48.8391
+
