@@ -11,7 +11,7 @@
 
 #define OPERAIONS 4           // + - * /
 #define REPEATS 10            // powtarzamy test 10 razy
-#define DATA_VECTOR_SIZE 2048 // 2048, 4096 i 8192
+#define DATA_VECTOR_SIZE 8192 // 2048, 4096 i 8192
 
 struct Vector128bit
 {
@@ -22,8 +22,8 @@ void generateData(Vector128bit *vector1, Vector128bit *vector2)
 {
     std::random_device rd;
     std::mt19937 generator(rd());
+    std::uniform_real_distribution<float> distribution(-1000000.0, 1000000.0);
     // std::uniform_real_distribution<float> distribution(std::numeric_limits<float>::min(), std::numeric_limits<float>::max());
-    std::uniform_real_distribution<float> distribution(-10.0, 10.0);
 
     for (int i = 0; i < DATA_VECTOR_SIZE; i++)
     {
@@ -90,23 +90,23 @@ void divisonSIMD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *res
 void additionSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
 {
     asm volatile(
-        "flds %4\n"
         "flds %8\n"
+        "flds %4\n"
         "faddp\n"
         "fstps %0\n"
 
-        "flds %5\n"
         "flds %9\n"
+        "flds %5\n"
         "faddp\n"
         "fstps %1\n"
 
-        "flds %6\n"
         "flds %10\n"
+        "flds %6\n"
         "faddp\n"
         "fstps %2\n"
 
-        "flds %7\n"
         "flds %11\n"
+        "flds %7\n"
         "faddp\n"
         "fstps %3\n"
 
@@ -118,23 +118,23 @@ void additionSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *re
 void subtractionSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
 {
     asm volatile(
-        "flds %4\n"
         "flds %8\n"
+        "flds %4\n"
         "fsubp\n"
         "fstps %0\n"
 
-        "flds %5\n"
         "flds %9\n"
+        "flds %5\n"
         "fsubp\n"
         "fstps %1\n"
 
-        "flds %6\n"
         "flds %10\n"
+        "flds %6\n"
         "fsubp\n"
         "fstps %2\n"
 
-        "flds %7\n"
         "flds %11\n"
+        "flds %7\n"
         "fsubp\n"
         "fstps %3\n"
 
@@ -146,23 +146,23 @@ void subtractionSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit 
 void multiplicationSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
 {
     asm volatile(
-        "flds %4\n"
         "flds %8\n"
+        "flds %4\n"
         "fmulp\n"
         "fstps %0\n"
 
-        "flds %5\n"
         "flds %9\n"
+        "flds %5\n"
         "fmulp\n"
         "fstps %1\n"
 
-        "flds %6\n"
         "flds %10\n"
+        "flds %6\n"
         "fmulp\n"
         "fstps %2\n"
 
-        "flds %7\n"
         "flds %11\n"
+        "flds %7\n"
         "fmulp\n"
         "fstps %3\n"
 
@@ -174,23 +174,23 @@ void multiplicationSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128b
 void divisionSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
 {
     asm volatile(
-        "flds %4\n"
         "flds %8\n"
+        "flds %4\n"
         "fdivp\n"
         "fstps %0\n"
 
-        "flds %5\n"
         "flds %9\n"
+        "flds %5\n"
         "fdivp\n"
         "fstps %1\n"
 
-        "flds %6\n"
         "flds %10\n"
+        "flds %6\n"
         "fdivp\n"
         "fstps %2\n"
 
-        "flds %7\n"
         "flds %11\n"
+        "flds %7\n"
         "fdivp\n"
         "fstps %3\n"
 
@@ -201,7 +201,7 @@ void divisionSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *re
 
 void testSIMD(Vector128bit *a, Vector128bit *b, Vector128bit resultVector[][DATA_VECTOR_SIZE], double *avgTime)
 {
-    // pusty niemiarodajny przebieg
+    // pusty niemiarodajny przebieg 5x10
     for (int i = 0; i < REPEATS * 5; i++)
     {
         for (int j = 0; j < DATA_VECTOR_SIZE; j++)
@@ -277,24 +277,13 @@ void testSIMD(Vector128bit *a, Vector128bit *b, Vector128bit resultVector[][DATA
         {
             timeSum += singleResultTime[i][j];
         }
-        // dzielenie przez liczbe powtorzen oraz 1000 - zamiana ns na us
-        avgTime[i] = timeSum / REPEATS / 1000;
+        avgTime[i] = timeSum / REPEATS;
     }
 }
 
 void testSSID(Vector128bit *a, Vector128bit *b, Vector128bit resultVector[][DATA_VECTOR_SIZE], double *avgTime)
 {
-    // additionSISD(&a[0], &b[0], &resultVector[0][0]);
-    // Vector128bit *siema = &resultVector[0][0];
-    // printf("xxx %f\n", siema->x);
-    // printf("Siema %f\n", a[0].x);
-    // printf("Siema %f\n", b[0].x);
-    // printf("Siema %f\n", resultVector[0][0].x);
-    // printf("Siema %f\n", a[0].z);
-    // printf("Siema %f\n", b[0].z);
-    // printf("Siema %f\n", resultVector[0][0].z);
-
-    // pusty niemiarodajny przebieg
+    // pusty niemiarodajny przebieg 10x5
     for (int i = 0; i < REPEATS * 5; i++)
     {
         for (int j = 0; j < DATA_VECTOR_SIZE; j++)
@@ -370,8 +359,7 @@ void testSSID(Vector128bit *a, Vector128bit *b, Vector128bit resultVector[][DATA
         {
             timeSum += singleResultTime[i][j];
         }
-        // dzielenie przez liczbe powtorzen oraz 1000 - zamiana ns na us
-        avgTime[i] = timeSum / REPEATS / 1000;
+        avgTime[i] = timeSum / REPEATS;
     }
 }
 
@@ -396,7 +384,7 @@ void saveResults(double *testResults, std::string fileName, bool operationTypeSI
         else
         {
             file << "Liczba liczb: " << DATA_VECTOR_SIZE << "\n";
-            file << "Sredni czas [us]:\n";
+            file << "Sredni czas [ns]:\n";
             file << "+ : " << testResults[0] << "\n";
             file << "- : " << testResults[1] << "\n";
             file << "* : " << testResults[2] << "\n";
@@ -419,13 +407,57 @@ int main()
 
     Vector128bit vector1[DATA_VECTOR_SIZE], vector2[DATA_VECTOR_SIZE];
     Vector128bit resultVector[OPERAIONS][DATA_VECTOR_SIZE];
+
+    // generowanie danych i zapisywanie ich do tablic struktur
     generateData(vector1, vector2);
 
     // test SIMD
     testSIMD(vector1, vector2, resultVector, testResultsSIMD);
 
-    // test SSID
+    // sprawdzanie poprawnosci obliczen SIMD
+    for (int j = 0; j < DATA_VECTOR_SIZE; j++)
+    {
+        if (vector1[j].x + vector2[j].x != resultVector[0][j].x || vector1[j].y + vector2[j].y != resultVector[0][j].y || vector1[j].z + vector2[j].z != resultVector[0][j].z || vector1[j].w + vector2[j].w != resultVector[0][j].w)
+        {
+            printf("Error in additionSIMD at index %d\n", j);
+        }
+        if (vector1[j].x - vector2[j].x != resultVector[1][j].x || vector1[j].y - vector2[j].y != resultVector[1][j].y || vector1[j].z - vector2[j].z != resultVector[1][j].z || vector1[j].w - vector2[j].w != resultVector[1][j].w)
+        {
+            printf("Error in subtractionSIMD at index %d\n", j);
+        }
+        if (vector1[j].x * vector2[j].x != resultVector[2][j].x || vector1[j].y * vector2[j].y != resultVector[2][j].y || vector1[j].z * vector2[j].z != resultVector[2][j].z || vector1[j].w * vector2[j].w != resultVector[2][j].w)
+        {
+            printf("Error in multiplicationSIMD at index %d\n", j);
+        }
+        if (vector1[j].x / vector2[j].x != resultVector[3][j].x || vector1[j].y / vector2[j].y != resultVector[3][j].y || vector1[j].z / vector2[j].z != resultVector[3][j].z || vector1[j].w / vector2[j].w != resultVector[3][j].w)
+        {
+            printf("Error in divisionSIMD at index %d\n", j);
+        }
+    }
+
+    // test SISD
     testSSID(vector1, vector2, resultVector, testResultsSISD);
+
+    // sprawdzanie poprawnosci obliczen SISD
+    for (int j = 0; j < DATA_VECTOR_SIZE; j++)
+    {
+        if (vector1[j].x + vector2[j].x != resultVector[0][j].x || vector1[j].y + vector2[j].y != resultVector[0][j].y || vector1[j].z + vector2[j].z != resultVector[0][j].z || vector1[j].w + vector2[j].w != resultVector[0][j].w)
+        {
+            printf("Error in additionSISD at index %d\n", j);
+        }
+        if (vector1[j].x - vector2[j].x != resultVector[1][j].x || vector1[j].y - vector2[j].y != resultVector[1][j].y || vector1[j].z - vector2[j].z != resultVector[1][j].z || vector1[j].w - vector2[j].w != resultVector[1][j].w)
+        {
+            printf("Error in subtractionSISD at index %d\n", j);
+        }
+        if (vector1[j].x * vector2[j].x != resultVector[2][j].x || vector1[j].y * vector2[j].y != resultVector[2][j].y || vector1[j].z * vector2[j].z != resultVector[2][j].z || vector1[j].w * vector2[j].w != resultVector[2][j].w)
+        {
+            printf("Error in multiplicationSISD at index %d\n", j);
+        }
+        if (vector1[j].x / vector2[j].x != resultVector[3][j].x || vector1[j].y / vector2[j].y != resultVector[3][j].y || vector1[j].z / vector2[j].z != resultVector[3][j].z || vector1[j].w / vector2[j].w != resultVector[3][j].w)
+        {
+            printf("Error in divisionSISD at index %d\n", j);
+        }
+    }
 
     // wyniki zapisywane do pliku - srednie czasy w mikrosekundach
     saveResults(testResultsSIMD, "wyniki_simd.txt", true);
@@ -436,7 +468,7 @@ int main()
     printf("SIMD Subtraction: %f\n", testResultsSIMD[1]);
     printf("SIMD Multiplication: %f\n", testResultsSIMD[2]);
     printf("SIMD Division: %f\n", testResultsSIMD[3]);
-
+    printf("--------------------------------\n");
     printf("SISD Addition: %f\n", testResultsSISD[0]);
     printf("SISD Subtraction: %f\n", testResultsSISD[1]);
     printf("SISD Multiplication: %f\n", testResultsSISD[2]);
