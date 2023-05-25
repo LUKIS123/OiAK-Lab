@@ -1,24 +1,24 @@
 Typ obliczen: SIMD
 Liczba liczb: 8192
-Sredni czas [us]:
-+ : 150.893
-- : 154.82
-* : 144.238
-/ : 157.589
+Sredni czas [ns]:
++ : 118382
+- : 118868
+* : 118434
+/ : 128181
 
 Typ obliczen: SIMD
 Liczba liczb: 4096
-Sredni czas [us]:
-+ : 74.6268
-- : 72.8288
-* : 89.4288
-/ : 78.8969
+Sredni czas [ns]:
++ : 60127.6
+- : 60057.1
+* : 59021.3
+/ : 65228.4
 
 Typ obliczen: SIMD
 Liczba liczb: 2048
-Sredni czas [us]:
-+ : 34.603
-- : 34.8679
-* : 34.4776
-/ : 37.1621
+Sredni czas [ns]:
++ : 29515
+- : 29172.5
+* : 29373.3
+/ : 32108
 

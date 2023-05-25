@@ -11,7 +11,7 @@
 
 #define OPERAIONS 4           // + - * /
 #define REPEATS 10            // powtarzamy test 10 razy
-#define DATA_VECTOR_SIZE 8192 // 2048, 4096 i 8192
+#define DATA_VECTOR_SIZE 2048 // 2048, 4096 i 8192
 
 struct Vector128bit
 {
@@ -39,56 +39,78 @@ void generateData(Vector128bit *vector1, Vector128bit *vector2)
     }
 }
 
-void additionSIMD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
+double additionSIMD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
 {
+    auto start = std::chrono::high_resolution_clock::now();
+
     asm volatile(
         "movaps %1, %%xmm0\n"
         "movaps %2, %%xmm1\n"
         "addps %%xmm1, %%xmm0\n"
         "movaps %%xmm0, %0"
-        : "=xm"(*resultVector)
-        : "xm"(*vector1), "xm"(*vector2)
+        : "=m"(*resultVector)
+        : "m"(*vector1), "m"(*vector2)
         : "xmm0", "xmm1");
+
+    auto end = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 }
 
-void subtractionSIMD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
+double subtractionSIMD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
 {
+    auto start = std::chrono::high_resolution_clock::now();
+
     asm volatile(
         "movaps %1, %%xmm0\n"
         "movaps %2, %%xmm1\n"
         "subps %%xmm1, %%xmm0\n"
         "movaps %%xmm0, %0"
-        : "=xm"(*resultVector)
-        : "xm"(*vector1), "xm"(*vector2)
+        : "=m"(*resultVector)
+        : "m"(*vector1), "m"(*vector2)
         : "xmm0", "xmm1");
+
+    auto end = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 }
 
-void multiplicationSIMD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
+double multiplicationSIMD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
 {
+    auto start = std::chrono::high_resolution_clock::now();
+
     asm volatile(
         "movaps %1, %%xmm0\n"
         "movaps %2, %%xmm1\n"
         "mulps %%xmm1, %%xmm0\n"
         "movaps %%xmm0, %0"
-        : "=xm"(*resultVector)
-        : "xm"(*vector1), "xm"(*vector2)
+        : "=m"(*resultVector)
+        : "m"(*vector1), "m"(*vector2)
         : "xmm0", "xmm1");
+
+    auto end = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 }
 
-void divisonSIMD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
+double divisonSIMD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
 {
+    auto start = std::chrono::high_resolution_clock::now();
+
     asm volatile(
         "movaps %1, %%xmm0\n"
         "movaps %2, %%xmm1\n"
         "divps %%xmm1, %%xmm0\n"
         "movaps %%xmm0, %0"
-        : "=xm"(*resultVector)
-        : "xm"(*vector1), "xm"(*vector2)
+        : "=m"(*resultVector)
+        : "m"(*vector1), "m"(*vector2)
         : "xmm0", "xmm1");
+
+    auto end = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 }
 
-void additionSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
+double additionSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
 {
+    auto start = std::chrono::high_resolution_clock::now();
+
     asm volatile(
         "flds %8\n"
         "flds %4\n"
@@ -113,10 +135,15 @@ void additionSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *re
         : "=m"(resultVector->x), "=m"(resultVector->y), "=m"(resultVector->z), "=m"(resultVector->w)
         : "m"(vector1->x), "m"(vector1->y), "m"(vector1->z), "m"(vector1->w),
           "m"(vector2->x), "m"(vector2->y), "m"(vector2->z), "m"(vector2->w));
+
+    auto end = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 }
 
-void subtractionSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
+double subtractionSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
 {
+    auto start = std::chrono::high_resolution_clock::now();
+
     asm volatile(
         "flds %8\n"
         "flds %4\n"
@@ -141,10 +168,15 @@ void subtractionSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit 
         : "=m"(resultVector->x), "=m"(resultVector->y), "=m"(resultVector->z), "=m"(resultVector->w)
         : "m"(vector1->x), "m"(vector1->y), "m"(vector1->z), "m"(vector1->w),
           "m"(vector2->x), "m"(vector2->y), "m"(vector2->z), "m"(vector2->w));
+
+    auto end = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 }
 
-void multiplicationSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
+double multiplicationSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
 {
+    auto start = std::chrono::high_resolution_clock::now();
+
     asm volatile(
         "flds %8\n"
         "flds %4\n"
@@ -169,10 +201,15 @@ void multiplicationSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128b
         : "=m"(resultVector->x), "=m"(resultVector->y), "=m"(resultVector->z), "=m"(resultVector->w)
         : "m"(vector1->x), "m"(vector1->y), "m"(vector1->z), "m"(vector1->w),
           "m"(vector2->x), "m"(vector2->y), "m"(vector2->z), "m"(vector2->w));
+
+    auto end = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 }
 
-void divisionSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
+double divisionSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *resultVector)
 {
+    auto start = std::chrono::high_resolution_clock::now();
+
     asm volatile(
         "flds %8\n"
         "flds %4\n"
@@ -197,6 +234,9 @@ void divisionSISD(Vector128bit *vector1, Vector128bit *vector2, Vector128bit *re
         : "=m"(resultVector->x), "=m"(resultVector->y), "=m"(resultVector->z), "=m"(resultVector->w)
         : "m"(vector1->x), "m"(vector1->y), "m"(vector1->z), "m"(vector1->w),
           "m"(vector2->x), "m"(vector2->y), "m"(vector2->z), "m"(vector2->w));
+
+    auto end = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 }
 
 void testSIMD(Vector128bit *a, Vector128bit *b, Vector128bit resultVector[][DATA_VECTOR_SIZE], double *avgTime)
@@ -223,48 +263,32 @@ void testSIMD(Vector128bit *a, Vector128bit *b, Vector128bit resultVector[][DATA
         // dodawanie
         for (int j = 0; j < DATA_VECTOR_SIZE; j++)
         {
-            auto start = std::chrono::high_resolution_clock::now();
-
-            additionSIMD(&a[j], &b[j], &resultVector[0][j]);
-
-            auto end = std::chrono::high_resolution_clock::now();
-            additionTime += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+            double timeElapsed = additionSIMD(&a[j], &b[j], &resultVector[0][j]);
+            additionTime += timeElapsed;
         }
         singleResultTime[0][i] = additionTime;
 
         // odejmowanie
         for (int j = 0; j < DATA_VECTOR_SIZE; j++)
         {
-            auto start = std::chrono::high_resolution_clock::now();
-
-            subtractionSIMD(&a[j], &b[j], &resultVector[1][j]);
-
-            auto end = std::chrono::high_resolution_clock::now();
-            subtractionTime += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+            double timeElapsed = subtractionSIMD(&a[j], &b[j], &resultVector[1][j]);
+            subtractionTime += timeElapsed;
         }
         singleResultTime[1][i] = subtractionTime;
 
         // mnozenie
         for (int j = 0; j < DATA_VECTOR_SIZE; j++)
         {
-            auto start = std::chrono::high_resolution_clock::now();
-
-            multiplicationSIMD(&a[j], &b[j], &resultVector[2][j]);
-
-            auto end = std::chrono::high_resolution_clock::now();
-            multiplicationTime += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+            double timeElapsed = multiplicationSIMD(&a[j], &b[j], &resultVector[2][j]);
+            multiplicationTime += timeElapsed;
         }
         singleResultTime[2][i] = multiplicationTime;
 
         // dzielenie
         for (int j = 0; j < DATA_VECTOR_SIZE; j++)
         {
-            auto start = std::chrono::high_resolution_clock::now();
-
-            divisonSIMD(&a[j], &b[j], &resultVector[3][j]);
-
-            auto end = std::chrono::high_resolution_clock::now();
-            divisionTime += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+            double timeElapsed = divisonSIMD(&a[j], &b[j], &resultVector[3][j]);
+            divisionTime += timeElapsed;
         }
         singleResultTime[3][i] = divisionTime;
     }
@@ -305,48 +329,32 @@ void testSSID(Vector128bit *a, Vector128bit *b, Vector128bit resultVector[][DATA
         // dodawanie
         for (int j = 0; j < DATA_VECTOR_SIZE; j++)
         {
-            auto start = std::chrono::high_resolution_clock::now();
-
-            additionSISD(&a[j], &b[j], &resultVector[0][j]);
-
-            auto end = std::chrono::high_resolution_clock::now();
-            additionTime += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+            double timeElapsed = additionSISD(&a[j], &b[j], &resultVector[0][j]);
+            additionTime += timeElapsed;
         }
         singleResultTime[0][i] = additionTime;
 
         // odejmowanie
         for (int j = 0; j < DATA_VECTOR_SIZE; j++)
         {
-            auto start = std::chrono::high_resolution_clock::now();
-
-            subtractionSISD(&a[j], &b[j], &resultVector[1][j]);
-
-            auto end = std::chrono::high_resolution_clock::now();
-            subtractionTime += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+            double timeElapsed = subtractionSISD(&a[j], &b[j], &resultVector[1][j]);
+            subtractionTime += timeElapsed;
         }
         singleResultTime[1][i] = subtractionTime;
 
         // mnozenie
         for (int j = 0; j < DATA_VECTOR_SIZE; j++)
         {
-            auto start = std::chrono::high_resolution_clock::now();
-
-            multiplicationSISD(&a[j], &b[j], &resultVector[2][j]);
-
-            auto end = std::chrono::high_resolution_clock::now();
-            multiplicationTime += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+            double timeElapsed = multiplicationSISD(&a[j], &b[j], &resultVector[2][j]);
+            multiplicationTime += timeElapsed;
         }
         singleResultTime[2][i] = multiplicationTime;
 
         // dzielenie
         for (int j = 0; j < DATA_VECTOR_SIZE; j++)
         {
-            auto start = std::chrono::high_resolution_clock::now();
-
-            divisionSISD(&a[j], &b[j], &resultVector[3][j]);
-
-            auto end = std::chrono::high_resolution_clock::now();
-            divisionTime += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+            double timeElapsed = divisionSISD(&a[j], &b[j], &resultVector[3][j]);
+            divisionTime += timeElapsed;
         }
         singleResultTime[3][i] = divisionTime;
     }
@@ -476,11 +484,3 @@ int main()
 
     return 0;
 }
-
-// https://www.codeproject.com/Articles/15971/Using-Inline-Assembly-in-C-C
-// https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html#Extended-Asm
-// https://en.wikibooks.org/wiki/X86_Assembly/SSE
-// http://students.mimuw.edu.pl/~zbyszek/asm/pl/instrukcje-sse.html
-// https://www.codeproject.com/Articles/5298048/Using-SIMD-to-Optimize-x86-Assembly-Code-in-Array#sse
-
-// komendy ggdb => i r xmm0 | i r sse | disass | x/f memory | x/2048 memory
